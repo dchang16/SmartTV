@@ -26,27 +26,6 @@ end
 function onPoseEdge(pose, edge)
 
     pose = conditionallySwapWave(pose)
-
-    -- if pose == "thumbToPinky" then
-    --     if not unlocked then
-    --      if edge == "off" then
-    --         -- Unlock when pose is released in case the user holds it for a while.
-    --              unlock()
-    --              myo.debug("ON")
-    --          end
-    --     elseif unlocked then
-    --      if edge == "off" then
-    --          -- Vibrate twice on unlock.
-    --          -- We do this when the pose is made for better feedback.
-    --          myo.vibrate("short")
-    --          myo.vibrate("short")
-    --          lock()
-    --          myo.debug("OFF")
-    --         end
-    --     end
-    -- end
-
-    -- Other poses only when active
         -- Left key
     if unlock then
         if pose == "waveIn" and edge == "on" then
@@ -57,11 +36,13 @@ function onPoseEdge(pose, edge)
 
             -- Right key
         if pose == "waveOut" and edge == "on" then
+            myo.vibrate("short")
             myo.keyboard("right_arrow","press")
             myo.debug("RIGHT")
         end
 
         if pose == "fingersSpread" and edge == "on" then
+            myo.vibrate("short")
             myo.keyboard("return", "press")
             myo.debug("RETURN")
         end
@@ -70,6 +51,7 @@ function onPoseEdge(pose, edge)
         if (pose == "fist" or pose == "thumbToPinky") then
             local now = myo.getTimeMilliseconds()
             if edge == "on" then
+                myo.vibrate("short")
                 centre = myo.getRoll()
                 shuttleSince = now
                 shuttleTimeout = SHUTTLE_CONTINUOUS_TIMEOUT
@@ -78,6 +60,7 @@ function onPoseEdge(pose, edge)
                 shuttleTimeout = nil
                 if check then
                     check = false
+                    myo.vibrate("short")
                     myo.keyboard("backspace", "press")
                     myo.debug("BACKSPACE")
                 end
@@ -115,10 +98,12 @@ function onPeriodic()
     if shuttleTimeout then
         if (now - shuttleSince) > shuttleTimeout then
             if myo.getRoll() > (centre + 0.3) then
+                myo.vibrate("short")
                 myo.keyboard("up_arrow", "press")
                 myo.debug("UP")
             end
             if myo.getRoll() < (centre - 0.3) then
+                myo.vibrate("short")
                 myo.keyboard("down_arrow", "press")
                 myo.debug("DOWN")
             end
