@@ -31,6 +31,7 @@ function onPoseEdge(pose, edge)
         if pose == "waveIn" and edge == "on" then
             myo.vibrate("short")
             myo.keyboard("left_arrow","press")
+            myo.keyboard("comma", "press")
             myo.debug("LEFT")
         end
 
@@ -38,17 +39,20 @@ function onPoseEdge(pose, edge)
         if pose == "waveOut" and edge == "on" then
             myo.vibrate("short")
             myo.keyboard("right_arrow","press")
+            myo.keyboard("period", "press")
             myo.debug("RIGHT")
         end
 
         if pose == "fingersSpread" and edge == "on" then
             myo.vibrate("short")
             myo.keyboard("return", "press")
+            myo.keyboard("space", "press")
             myo.debug("RETURN")
         end
 
 
         if (pose == "fist" or pose == "thumbToPinky") then
+            myo.keyboard("x", "press")
             local now = myo.getTimeMilliseconds()
             if edge == "on" then
                 myo.vibrate("short")
