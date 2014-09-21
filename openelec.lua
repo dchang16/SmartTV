@@ -68,45 +68,82 @@ function onPoseEdge(pose, edge)
 
 
         if (pose == "fist" or pose == "thumbToPinky") then
-            if edge == "on" then -- clicks down to drag
-                check = true
-                myo.debug(myo.getRoll())
+            local now = myo.getTimeMilliseconds()
+            if edge == "on" then
                 centre = myo.getRoll()
-             elseif edge == "off" and counter <= 15 then
-                counter = 0
-                check = false
-                myo.keyboard("backspace", "press")
-                myo.debug("BACKSPACE")     
-             elseif edge == "off" then -- release click
-                check = false   
+                shuttleSince = now
+                shuttleTimeout = SHUTTLE_CONTINUOUS_TIMEOUT
             end
+            if edge == "off" then
+                shuttleTimeout = nil
+                if check then
+                    check = false
+                    myo.keyboard("backspace", "press")
+                    myo.debug("BACKSPACE")
+                end
+            end
+
+
+            -- if edge == "on" then -- clicks down to drag
+            --     check = true
+            --     myo.debug(myo.getRoll())
+            --     centre = myo.getRoll()
+            --  elseif edge == "off" and counter <= 15 then
+            --     counter = 0
+            --     check = false
+            --     myo.keyboard("backspace", "press")
+            --     myo.debug("BACKSPACE")     
+            --  elseif edge == "off" then -- release click
+            --     check = false   
+            -- end
         end
         
     end
 
 end
 
+SHUTTLE_CONTINUOUS_TIMEOUT = 1000
+
+SHUTTLE_CONTINUOUS_PERIOD = 500
+
 -- Other callbacks
 
 
 
 function onPeriodic()
-
-    if check == true then
-        myo.debug(myo.getRoll())
-        counter = counter + 1
+    local now = myo.getTimeMilliseconds()
+    if shuttleTimeout then
+        if (now - shuttleSince) > shuttleTimeout then
+            if myo.getRoll() > (centre + 0.3) then
+                myo.keyboard("up_arrow", "press")
+                myo.debug("UP")
+            end
+            if myo.getRoll() < (centre - 0.3) then
+                myo.keyboard("down_arrow", "press")
+                myo.debug("DOWN")
+            end
+            check = false
+            shuttleSince = now
+        end
+    else 
+        check = true
     end
 
-    if counter > 15 then
-      if myo.getRoll() > (centre + 0.3) then
-        myo.keyboard("up_arrow", "press")
-        myo.debug("UP")
-      elseif myo.getRoll() < (centre - 0.3) then
-        myo.keyboard("down_arrow", "press")
-        myo.debug("DOWN")
-      end
-    counter = 0
-    end
+    -- if check == true then
+    -- myo.debug(myo.getRoll())
+    -- counter = counter + 1
+    -- end
+
+    -- if counter > 15 then
+    --   if myo.getRoll() > (centre + 0.3) then
+    --     myo.keyboard("up_arrow", "press")
+    --     myo.debug("UP")
+    --   elseif myo.getRoll() < (centre - 0.3) then
+    --     myo.keyboard("down_arrow", "press")
+    --     myo.debug("DOWN")
+    --   end
+    -- counter = 0
+    -- end
 end
 
 function onForegroundWindowChange(app, title)
